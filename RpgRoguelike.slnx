@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="RpgRoguelikeCore/RpgRoguelikeCore.csproj" />
+  <Project Path="RpgRoguelikeRun/RpgRoguelikeRun.csproj" />
+</Solution>
