@@ -3,7 +3,7 @@ using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Items;
 using RpgRoguelikeRun.WorldLayer;
 
-Game.Instance.Run();
+GameManager.Instance.Run();
 // var world = new World(width: 32, height: 16);
 // var trader = new Trader("Ганс");
 
