@@ -1,6 +1,6 @@
 using RpgRoguelikeRun.Entities;
 
-namespace RpgRoguelikeRun.WorldMap;
+namespace RpgRoguelikeRun.WorldLayer;
 public class World
 {
     public WorldMap Map { get; }

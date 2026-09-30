@@ -1,10 +1,24 @@
 using System.Runtime.ConstrainedExecution;
+using RpgRoguelikeRun.WorldLayer;
 
 namespace RpgRoguelikeRun;
 
 public class Game
 {
-    public void Init()
+    public WorldMap worldMap = new(200, 300);
+    public static Game Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new Game();
+                instance.Init(); 
+            }
+            return instance;
+        } 
+     } 
+    private void Init()
     {
         Console.Clear();
         Console.WriteLine("Game is running...");
@@ -13,9 +27,9 @@ public class Game
      
     public void Run()
     {
+        Init();
         while (!GameIsEnded())
         {
-            Init();
             HandleInput();
             Update();
             Render();
@@ -46,4 +60,5 @@ public class Game
     }
 
     private bool gameStopped = false;
+    private static Game? instance;
 }
