@@ -11,7 +11,7 @@ public class Item
 
     public string Feature {get; set; }
 
-    public Item(string name, int cost, string category, string rarity, string feature = null)
+    public Item(string name, int cost, string category, string rarity, string feature = null!)
     {
         Name = name;
         Cost = cost;

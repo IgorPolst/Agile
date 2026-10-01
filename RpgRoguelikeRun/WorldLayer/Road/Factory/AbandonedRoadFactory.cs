@@ -1,0 +1,10 @@
+namespace RpgRoguelikeRun.WorldLayer.Roads;
+
+public class AbandonedRoadFactory : RoadFactory
+{
+    public AbandonedRoadFactory(int baseLength, double lengthVariance = 0.4)
+        : base(baseLength, lengthVariance) { }
+
+    public override Road CreateRoad(Random random)
+        => new AbandonedRoad(RollLength(random));
+}
