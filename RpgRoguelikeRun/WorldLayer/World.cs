@@ -12,6 +12,7 @@ public class World
 
     public List<RoadEventFactory> EventFactories { get; } = new();
     public List<RoadFactory> RoadFactories { get; } = new();
+     public List<Location> Locations { get; } = new();
     public List<Road> Roads { get; } = new();
 
     private readonly Random _random = new();
@@ -26,6 +27,30 @@ public class World
     public void AddTrader(Trader trader) => Trader = trader;
     public void AddEnemy(Enemy enemy) => Enemies.Add(enemy);
     public void RemoveEnemy(Enemy enemy) => Enemies.Remove(enemy);
+
+    // ---------- Локации ----------
+    public void AddLocation(Location location) => Locations.Add(location);
+
+    public Location GetRandomLocation()
+    {
+        if (Locations.Count == 0)
+            throw new InvalidOperationException("В мире нет локаций.");
+        return Locations[_random.Next(Locations.Count)];
+    }
+
+    public void ArriveAt(Trader trader)
+    {
+        if (trader.CurrentRoad?.Destination == null)
+        {
+            Console.WriteLine("⚠️  Дорога не имеет Destination — торговец остаётся на месте.");
+            trader.LeaveRoad();
+            return;
+        }
+
+        Location destination = trader.CurrentRoad.Destination;
+        trader.LeaveRoad();
+        trader.EnterLocation(destination);
+    }
 
     // ---------- Регистрация фабрик ----------
 

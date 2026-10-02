@@ -1,3 +1,4 @@
+using RpgRoguelikeRun.WorldLayer;
 namespace RpgRoguelikeRun.WorldLayer.Roads;
 
 public abstract class Road
@@ -7,6 +8,7 @@ public abstract class Road
     public RoadQuality Quality { get; protected set; }
     public abstract int TollCost { get; }
     public abstract double Safety { get; }
+    public Location? Destination { get; set; }
 
     public double EffectiveSafety => Quality switch
     {
@@ -32,5 +34,5 @@ public abstract class Road
     public abstract void ApplyStorm();
     public virtual void Repair() => Quality = RoadQuality.Paved;
     public override string ToString()
-        => $"{Name} | length={Length} | quality={Quality} | toll={TollCost} | safety={Safety:P0}";
+            => $"{Name} → {Destination?.Name ?? "?"} | length={Length} | quality={Quality} | toll={TollCost}";
 }

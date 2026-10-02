@@ -3,6 +3,10 @@ using RpgRoguelikeRun.Entities.Events;
 using RpgRoguelikeRun.Enums;
 using RpgRoguelikeRun.WorldLayer;
 using RpgRoguelikeRun.WorldLayer.Roads;
+using RpgRoguelikeRun.Items;
+using RpgRoguelikeRun.UI;
+using RpgRoguelikeRun.Configuration;
+
 
 namespace RpgRoguelikeRun;
 
@@ -30,6 +34,7 @@ public sealed class GameManager
     private Trader _trader = null!;
     private bool _gameStopped;
     private readonly Random _random;
+    private int _turnsOnRoad = 0;
 
     // ---------- Init ----------
     private void Init()
@@ -38,45 +43,36 @@ public sealed class GameManager
         _gameStopped = false;
 
         _world = new World(MapWidth, MapHeight);
-        ConfigureEventFactories();
-        ConfigureRoadFactories();
+        WorldConfigurator.Configure(_world, Difficulty);
 
         _trader = new Trader("Ганс", gold: 100);
         _world.AddTrader(_trader);
+        _trader = TraderFactory.CreateStartingTrader("Ганс", gold: 100);
+
+        var startLocation = _world.Locations.First();
+        _trader.EnterLocation(startLocation);
+
     }
 
-    private void ConfigureEventFactories()
+    private void TravelFromLocation()
     {
-        (int banditDamage, int stormDays, int merchantBonus) = Difficulty switch
+        if (_trader.CurrentLocation == null)
         {
-            Difficulty.Easy   => (20, 1, 40),
-            Difficulty.Normal => (50, 1, 25),
-            Difficulty.Hard   => (80, 2, 15),
-            _                 => (50, 1, 25)
-        };
+            Console.WriteLine("Вы уже в пути. Нажмите WASD, чтобы идти.");
+            Console.ReadKey(true);
+            return;
+        }
 
-        _world.RegisterEventFactory(new BanditAmbushFactory(banditDamage));
-        _world.RegisterEventFactory(new StormFactory(stormDays));
-        _world.RegisterEventFactory(new HelpfulMerchantFactory(merchantBonus));
+        var road = TravelMenu.ChooseRoad(_trader);
+        if (road == null) return;
+
+        if (!_world.TryPayToll(road, _trader)) return;
+
+        _trader.EnterRoad(road);
+        Console.WriteLine($"Вы отправились в путь по {road.Name} → {road.Destination?.Name ?? "?"}.");
+        Console.WriteLine($"Длина дороги: {road.TravelTime} ходов. Жмите WASD, чтобы идти.");
+        Console.ReadKey(true);
     }
-
-    private void ConfigureRoadFactories()
-    {
-        (int royalLen, int abandonedLen, int forestLen) = Difficulty switch
-        {
-            Difficulty.Easy   => (8, 10, 4),
-            Difficulty.Normal => (10, 15, 6),
-            Difficulty.Hard   => (12, 20, 8),
-            _                 => (10, 15, 6)
-        };
-
-        _world.RegisterRoadFactory(new RoyalHighwayFactory(royalLen));
-        _world.RegisterRoadFactory(new AbandonedRoadFactory(abandonedLen));
-        _world.RegisterRoadFactory(new ForestPathFactory(forestLen));
-
-        _world.GenerateRoads(5);
-    }
-
     // ---------- Run ----------
     public void Run()
     {
@@ -122,59 +118,116 @@ public sealed class GameManager
             case ConsoleKey.D:
                 DoTurn();
                 break;
+            case ConsoleKey.B:
+                MarketMenu.Open(_trader);
+                break;
+            case ConsoleKey.T:
+                TravelFromLocation();
+                break;
         }
     }
 
     // ---------- Ход ----------
-    private void DoTurn()
+        private void DoTurn()
     {
-        bool moved = _trader.TryMove();
-        if (!moved) return;
-
-        if (_trader.CurrentRoad == null)
+        if (_trader.CurrentRoad != null)
         {
-            Road road = _world.Roads[_random.Next(_world.Roads.Count)];
-            _trader.EnterRoad(road);
-            _world.TryPayToll(road, _trader);
+            bool arrived = _trader.StepOnRoad();
+            TryTriggerRoadEvent();
+
+            if (arrived)
+            {
+                _world.ArriveAt(_trader);
+                Console.ReadKey(true);
+            }
+        }
+        else
+        {
+            _trader.TryMove();
         }
 
-        if (_random.NextDouble() < 0.3)
+        CheckBankruptcy();      
+    }
+
+    private void CheckBankruptcy()
+    {
+        if (_trader.Gold <= 0 && _trader.Inventory.Stacks.Count == 0)
+        {
+            _gameStopped = true;
+            Console.Clear();
+            Console.WriteLine("💀 Вы обанкротились! Игра окончена.");
+            Console.WriteLine($"Событий пережито: {_trader.EventLog.Count}");
+            Console.ReadKey(true);
+        }
+    }
+
+        private void TryTriggerRoadEvent()
+    {
+        if (_trader.CurrentRoad == null) return;
+
+        double chance = Difficulty switch
+        {
+            Difficulty.Easy   => 0.20,
+            Difficulty.Normal => 0.30,
+            Difficulty.Hard   => 0.45,
+            _                 => 0.30
+        };
+
+        if (_random.NextDouble() < chance)
         {
             Console.Clear();
-            _world.TriggerRandomRoadEvent(_trader, _trader.CurrentRoad!);
+            _world.TriggerRandomRoadEvent(_trader, _trader.CurrentRoad);
             Console.WriteLine();
             Console.WriteLine("Нажмите любую клавишу...");
             Console.ReadKey(true);
         }
     }
 
-    private void Update() { }
+
+    private void Update()
+    {
+    }
 
     // ---------- Render ----------
-    private void Render()
+   private void Render()
     {
         Console.Clear();
         Console.WriteLine($"=== Medieval Trader | {Difficulty} | {MapWidth}x{MapHeight} ===");
         Console.WriteLine($"Trader: {_trader.Name} | Gold: {_trader.Gold}");
 
-        if (_trader.CurrentRoad is Road currentRoad)
+        // Инвентарь
+        Console.WriteLine();
+        Console.WriteLine("--- Инвентарь ---");
+        if (_trader.Inventory.Stacks.Count == 0)
+            Console.WriteLine("  (пусто)");
+        else
+            foreach (var stack in _trader.Inventory.Stacks)
+                Console.WriteLine($"  • {stack}");
+
+        // Текущее местоположение
+        Console.WriteLine();
+        if (_trader.CurrentLocation is Location loc)
         {
-            Console.WriteLine($"Road: {currentRoad.Name} | quality={currentRoad.Quality}");
-            Console.WriteLine($"  ⚔️ Bandit chance: {currentRoad.BanditChance:P0} | 🤝 Friend chance: {currentRoad.FriendlyChance:P0}");
+            Console.WriteLine($"📍 Локация: {loc.Name} ({loc.Type})");
+            Console.WriteLine($"   Рынок: {loc.Market.Lots.Count} лотов");
+            Console.WriteLine($"   Дорог отсюда: {loc.OutgoingRoads.Count}");
+            foreach (var r in loc.OutgoingRoads)
+                Console.WriteLine($"      → {r.Destination?.Name ?? "?"} | {r.TravelTime} ходов | пошлина {r.TollCost}");
+        }
+        else if (_trader.CurrentRoad is Road road)
+        {
+            Console.WriteLine($"В пути: {road.Name} → {road.Destination?.Name ?? "?"}");
+            Console.WriteLine($"   Прогресс: {_trader.TurnsOnRoad}/{road.TravelTime}");
+            Console.WriteLine($"   Bandit chance: {road.BanditChance:P0} | Friend chance: {road.FriendlyChance:P0}");
         }
 
         if (_trader.IsDelayed)
-            Console.WriteLine($"⏳ Задержан на {_trader.DaysDelayed} ход(ов)");
+            Console.WriteLine($"Задержан на {_trader.DaysDelayed} ход(ов)");
 
         if (_trader.LastEvent != null)
             Console.WriteLine($"Last event: {_trader.LastEvent.Title}");
 
         Console.WriteLine();
-        Console.WriteLine("--- Дороги мира ---");
-        foreach (var road in _world.Roads)
-            Console.WriteLine($"  • {road}");
-
-        Console.WriteLine();
-        Console.WriteLine("WASD / Arrows — move, Escape — exit");
+        Console.WriteLine("WASD — идти, B — рынок, T — выйти из локации, Escape — exit");
     }
 }
