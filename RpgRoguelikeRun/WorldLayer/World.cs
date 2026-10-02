@@ -1,7 +1,7 @@
 using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Entities.Events;
 using RpgRoguelikeRun.WorldLayer.Roads;
-
+using RpgRoguelikeRun.WorldLayer.Roads.Factory;
 namespace RpgRoguelikeRun.WorldLayer;
 
 public class World
@@ -13,7 +13,7 @@ public class World
     public List<RoadEventFactory> EventFactories { get; } = new();
     public List<RoadFactory> RoadFactories { get; } = new();
      public List<Location> Locations { get; } = new();
-    public List<Road> Roads { get; } = new();
+    public List<Road> Road { get; } = new();
 
     private readonly Random _random = new();
 
@@ -71,7 +71,7 @@ public class World
     public void GenerateRoads(int count)
     {
         for (int i = 0; i < count; i++)
-            Roads.Add(CreateRandomRoad());
+            Road.Add(CreateRandomRoad());
     }
 
     // ---------- События ----------

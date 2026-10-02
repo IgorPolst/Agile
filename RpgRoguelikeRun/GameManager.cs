@@ -1,9 +1,7 @@
 using RpgRoguelikeRun.Entities;
-using RpgRoguelikeRun.Entities.Events;
 using RpgRoguelikeRun.Enums;
 using RpgRoguelikeRun.WorldLayer;
 using RpgRoguelikeRun.WorldLayer.Roads;
-using RpgRoguelikeRun.Items;
 using RpgRoguelikeRun.UI;
 using RpgRoguelikeRun.Configuration;
 

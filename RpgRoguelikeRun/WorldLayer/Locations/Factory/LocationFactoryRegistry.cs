@@ -1,4 +1,4 @@
-namespace RpgRoguelikeRun.WorldLayer.Locations;
+namespace RpgRoguelikeRun.WorldLayer.Locations.Factory;
 
 public static class LocationFactoryRegistry
 {

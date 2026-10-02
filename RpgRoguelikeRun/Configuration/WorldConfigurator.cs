@@ -1,20 +1,24 @@
 using RpgRoguelikeRun.Entities.Events;
 using RpgRoguelikeRun.Enums;
 using RpgRoguelikeRun.WorldLayer;
+using RpgRoguelikeRun.WorldLayer.Locations.Factory;
 using RpgRoguelikeRun.WorldLayer.Roads;
-using RpgRoguelikeRun.WorldLayer.Locations;
+using RpgRoguelikeRun.WorldLayer.Roads.Factory;
 
 namespace RpgRoguelikeRun.Configuration;
 
 public static class WorldConfigurator
 {
     private static readonly Random _random = new();
+
     public static void Configure(World world, Difficulty difficulty)
     {
         ConfigureEventFactories(world, difficulty);
         ConfigureRoadFactories(world, difficulty);
         ConfigureLocations(world);
     }
+
+    // ---------- События ----------
 
     private static void ConfigureEventFactories(World world, Difficulty difficulty)
     {
@@ -31,6 +35,8 @@ public static class WorldConfigurator
         world.RegisterEventFactory(new HelpfulMerchantFactory(config.merchantBonus));
     }
 
+    // ---------- Дороги ----------
+
     private static void ConfigureRoadFactories(World world, Difficulty difficulty)
     {
         var config = difficulty switch
@@ -46,48 +52,40 @@ public static class WorldConfigurator
         world.RegisterRoadFactory(new ForestPathFactory(config.forestLen));
     }
 
+    // ---------- Локации ----------
+
     private static void ConfigureLocations(World world)
-{
-    // 1. Создаём локации через реестр фабрик
-    var cairo   = LocationFactoryRegistry.Create(LocationType.Port,      "Каир");
-    var dorn    = LocationFactoryRegistry.Create(LocationType.Mine,      "Дорн");
-    var abbey   = LocationFactoryRegistry.Create(LocationType.Monastery, "Аббатство");
-    var village = LocationFactoryRegistry.Create(LocationType.Village,   "Дубровка");
-    var port    = LocationFactoryRegistry.Create(LocationType.Port,      "Северный порт");
-    var town    = LocationFactoryRegistry.Create(LocationType.Town,      "Столица");
-
-    var all = new[] { cairo, dorn, abbey, village, port, town };
-    foreach (var loc in all)
-        world.AddLocation(loc);
-
-    foreach (var location in all)
     {
-        int maxRoads = Math.Min(4, all.Length - 1);
-        int roadCount = _random.Next(1, maxRoads + 1);
-
-        var destinations = all
-            .Where(l => l != location)
-            .OrderBy(_ => _random.Next())
-            .Take(roadCount)
+        var locations = LocationPresets
+            .All
+            .Select(preset => LocationFactoryRegistry.Create(preset.Type, preset.Name))
             .ToArray();
 
-        foreach (var dest in destinations)
-        {
-            Road road = world.CreateRandomRoad();
-            location.ConnectTo(dest, road);
-        }
+        foreach (var loc in locations)
+            world.AddLocation(loc);
+
+        ConnectRandomRoads(world, locations);
     }
-}
 
-
-    private static void Connect(World world, Location from, Location[] destinations)
+    private static void ConnectRandomRoads(World world, Location[] locations)
     {
-        foreach (var to in destinations)
+        const int MaxRoadsPerLocation = 4;
+
+        foreach (var location in locations)
         {
-            Road road = world.CreateRandomRoad();
-            from.ConnectTo(to, road);
+            int maxRoads = Math.Min(MaxRoadsPerLocation, locations.Length - 1);
+            int roadCount = _random.Next(1, maxRoads + 1);
+
+            var destinations = locations
+                .Where(l => l != location)
+                .OrderBy(_ => _random.Next())
+                .Take(roadCount);
+
+            foreach (var dest in destinations)
+            {
+                Road road = world.CreateRandomRoad();
+                location.ConnectTo(dest, road);
+            }
         }
     }
-
-    
 }

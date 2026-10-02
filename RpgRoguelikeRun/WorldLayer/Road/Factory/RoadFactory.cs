@@ -1,4 +1,4 @@
-namespace RpgRoguelikeRun.WorldLayer.Roads;
+namespace RpgRoguelikeRun.WorldLayer.Roads.Factory;
 
 public abstract class RoadFactory
 {

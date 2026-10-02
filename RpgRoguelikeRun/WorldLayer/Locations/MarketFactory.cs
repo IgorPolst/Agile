@@ -1,11 +1,7 @@
 using RpgRoguelikeRun.Items;
 
-namespace RpgRoguelikeRun.WorldLayer.Locations;
+namespace RpgRoguelikeRun.WorldLayer;
 
-/// <summary>
-/// Создаёт рынки для разных типов локаций.
-/// Цены — базовые, модификатор по типу применяется в WorldConfigurator.
-/// </summary>
 public static class MarketFactory
 {
     private static readonly Random _random = new();
