@@ -30,6 +30,18 @@ public class Trader : Creature
         Inventory = new Inventory(capacity);
     }
 
+    // ---------- История сделок ----------
+    public List<TradeRecord> TradeHistory { get; } = new();
+
+    private const int MaxHistorySize = 10;
+
+    public void RegisterTrade(TradeRecord record)
+    {
+        TradeHistory.Insert(0, record);
+        if (TradeHistory.Count > MaxHistorySize)
+            TradeHistory.RemoveAt(TradeHistory.Count - 1);
+    }
+
     // ---------- Ход ----------
     public bool TryMove()
     {

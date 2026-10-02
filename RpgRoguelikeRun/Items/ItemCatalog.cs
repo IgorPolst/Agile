@@ -3,6 +3,7 @@ namespace RpgRoguelikeRun.Items;
 public static class ItemCatalog
 {
     private static readonly Dictionary<string, Item> _prototypes = new();
+    private static readonly Random _random = new();
 
     static ItemCatalog()
     {
@@ -63,7 +64,21 @@ public static class ItemCatalog
         if (!_prototypes.TryGetValue(key, out var prototype))
             throw new ArgumentException($"Неизвестный товар: {key}");
 
-        return (Item)prototype.Clone();
+        Item clone = (Item)prototype.Clone();
+        clone.Quality = RollQuality();
+        return clone;
+    }
+
+        private static ItemQuality RollQuality()
+    {
+        double roll = _random.NextDouble();
+        return roll switch
+        {
+            < 0.10 => ItemQuality.Poor,
+            < 0.70 => ItemQuality.Common,
+            < 0.95 => ItemQuality.Good,
+            _      => ItemQuality.Excellent
+        };
     }
 
     public static IEnumerable<string> Keys => _prototypes.Keys;

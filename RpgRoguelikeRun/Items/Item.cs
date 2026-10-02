@@ -13,15 +13,13 @@ public class Item : ICloneable
     public int? ShelfLifeDays { get; set; }
     public int DaysInStorage { get; set; }
     public bool IsPerishable => ShelfLifeDays.HasValue;
-    public bool IsSpoiled =>
-        ShelfLifeDays.HasValue && DaysInStorage >= ShelfLifeDays.Value;
+    public  bool IsSpoiled => IsPerishable && DaysInStorage >= ShelfLifeDays!.Value; 
 
     public int CurrentCost
     {
         get
         {
-            if (IsSpoiled) return Math.Max(1, BaseCost / 4);
-
+            // 1. Базовая цена = BaseCost × quality
             double qualityMultiplier = Quality switch
             {
                 ItemQuality.Poor      => 0.7,
@@ -31,16 +29,25 @@ public class Item : ICloneable
                 _                     => 1.0
             };
 
-            double rarityMultiplier = Rarity switch
-            {
-                ItemRarity.Common    => 1.0,
-                ItemRarity.Uncommon  => 1.3,
-                ItemRarity.Rare      => 1.8,
-                ItemRarity.Legendary => 3.0,
-                _                    => 1.0
-            };
+            double basePrice = BaseCost * qualityMultiplier;
 
-            return (int)Math.Round(BaseCost * qualityMultiplier * rarityMultiplier);
+            // 2. Скидка за свежесть
+            double freshnessMultiplier = 1.0;
+
+            if (IsPerishable)
+            {
+                double usedFraction = (double)DaysInStorage / ShelfLifeDays!.Value;
+
+                freshnessMultiplier = usedFraction switch
+                {
+                    < 0.5  => 1.0,    // свежий — без скидки
+                    < 0.8  => 0.85,   // лежалый — минус 15%
+                    < 1.0  => 0.60,   // скоро испортится — минус 40%
+                    _      => 0.25    // испорчен — минус 75%
+                };
+            }
+
+            return Math.Max(1, (int)Math.Round(basePrice * freshnessMultiplier));
         }
     }
 

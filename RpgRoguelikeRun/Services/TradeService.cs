@@ -1,6 +1,6 @@
 using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Items;
-using RpgRoguelikeRun.WorldLayer;
+using RpgRoguelikeRun.Entities;
 
 namespace RpgRoguelikeRun.Services;
 
@@ -33,6 +33,7 @@ public static class TradeService
         lot.RegisterTrade(quantity);
         if (lot.Quantity == 0) market.Lots.Remove(lot);
 
+        trader.RegisterTrade(new TradeRecord(item.Name, quantity, pricePerUnit, isPurchase: true));
         return null;
     }
 
@@ -61,6 +62,7 @@ public static class TradeService
             market.Lots.Last().RegisterTrade(quantity);
         }
 
+        trader.RegisterTrade(new TradeRecord(item.Name, quantity, pricePerUnit, isPurchase: true));
         return null;
     }
 }

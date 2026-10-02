@@ -99,8 +99,9 @@ public sealed class GameManager
     private void HandleInput()
     {
         var key = Console.ReadKey(true);
+        ConsoleKey code = key.Key; 
 
-        switch (key.Key)
+        switch (code)
         {
             case ConsoleKey.Escape:
                 _gameStopped = true;

@@ -48,6 +48,14 @@ public static class MarketMenu
                 }
 
             Console.WriteLine();
+            Console.WriteLine("--- Последние сделки ---");
+            if (trader.TradeHistory.Count == 0)
+                Console.WriteLine("  (пока ничего)");
+            else
+                foreach (var record in trader.TradeHistory)
+                    Console.WriteLine($"  {record}");
+
+            Console.WriteLine();
             Console.WriteLine("B — купить, S — продать, Escape — выйти");
 
             var key = Console.ReadKey(true);
@@ -67,6 +75,8 @@ public static class MarketMenu
 
             Console.Clear();
             Console.WriteLine("=== КУПИТЬ ===");
+            Console.WriteLine($"Золото: {trader.Gold}");
+            Console.WriteLine($"Инвентарь: {trader.Inventory.Count}/{trader.Inventory.Capacity}");
             for (int i = 0; i < lots.Count; i++)
             {
                 var lot = lots[i];
@@ -102,6 +112,7 @@ public static class MarketMenu
             Console.Clear();
             Console.WriteLine("=== ПРОДАТЬ ===");
             Console.WriteLine($"Золото: {trader.Gold}");
+            Console.WriteLine($"Инвентарь: {trader.Inventory.Count}/{trader.Inventory.Capacity}");
             Console.WriteLine();
             for (int i = 0; i < stacks.Count; i++)
             {
