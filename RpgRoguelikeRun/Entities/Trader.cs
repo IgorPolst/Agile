@@ -28,6 +28,8 @@ public class Trader : Creature
         : base(name, gold)
     {
         Inventory = new Inventory(capacity);
+        Inventory.OnItemAdded += SubscribeToItem;
+        Inventory.OnItemRemoved += UnsubscribeFromItem;
     }
 
     // ---------- История сделок ----------
@@ -122,4 +124,28 @@ public class Trader : Creature
     // ---------- Торговля (делегаты в TradeService) ----------
     public string? Buy(Item item, int quantity) => TradeService.Buy(this, item, quantity);
     public string? Sell(Item item, int quantity) => TradeService.Sell(this, item, quantity);
+
+    // ---------- Observer: подписка на порчу товаров ----------
+
+    public List<Item> SpoiledLog { get; } = new();
+
+    public string? LastSpoiledMessage { get; private set; }
+
+    public void SubscribeToItem(Item item)
+    {
+        item.OnSpoiled += HandleItemSpoiled;
+    }
+
+    public void UnsubscribeFromItem(Item item)
+    {
+        item.OnSpoiled -= HandleItemSpoiled;
+    }
+
+    private void HandleItemSpoiled(Item item)
+    {
+        string message = $"⚠️ {item.Name} испортился! Цена упала до {item.CurrentCost}.";
+        SpoiledLog.Add(item);
+        LastSpoiledMessage = message;
+        Console.WriteLine(message);
+    }
 }

@@ -14,9 +14,31 @@ public class Item : ICloneable
     public int BaseCost { get; set; }
     public ItemQuality Quality { get; set; }
     public int? ShelfLifeDays { get; set; }
-    public int DaysInStorage { get; set; }
+    private int _daysInStorage;
+
+    public int DaysInStorage
+    {
+        get => _daysInStorage;
+        set
+        {
+            if (value == _daysInStorage) return;   // 👈 не дёргаем событие зря
+
+            bool wasSpoiled = IsSpoiled;
+            _daysInStorage = value;
+            bool isSpoiled = IsSpoiled;
+
+            // Если товар перешёл из «свежего» в «испорченный» — кричим
+            if (!wasSpoiled && isSpoiled)
+                OnSpoiled?.Invoke(this);
+        }
+    }
+    // ---------- Observer ----------
+
+    public event Action<Item>? OnSpoiled;
     public bool IsPerishable => ShelfLifeDays.HasValue;
     public  bool IsSpoiled => IsPerishable && DaysInStorage >= ShelfLifeDays!.Value; 
+
+    
 
     public int CurrentCost
     {
@@ -53,6 +75,8 @@ public class Item : ICloneable
             DaysInStorage = DaysInStorage
         };
     }
+
+    
 
     public override string ToString()
         => $"{Name} [{Category}/{Rarity}] cost={CurrentCost} q={Quality}" +

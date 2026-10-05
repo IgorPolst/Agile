@@ -4,6 +4,9 @@ public class Inventory
 {
     public int Capacity { get; set; }
     public List<ItemStack> Stacks { get; } = new();
+        // ---------- Observer ----------
+    public event Action<Item>? OnItemAdded;
+    public event Action<Item>? OnItemRemoved;
 
     public Inventory(int capacity)
     {
@@ -26,6 +29,7 @@ public class Inventory
         else
         {
             Stacks.Add(new ItemStack(item, quantity));
+            OnItemAdded?.Invoke(item);
         }
         return true;
     }
@@ -39,7 +43,10 @@ public class Inventory
 
         stack.Quantity -= quantity;
         if (stack.Quantity == 0)
+        {
             Stacks.Remove(stack);
+            OnItemRemoved?.Invoke(item);
+        }
 
         return true;
     }

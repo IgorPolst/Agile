@@ -59,13 +59,18 @@ public static class WorldConfigurator
     private static void ConfigureLocations(World world)
     {
         var locations = LocationPresets
-        .All
-        .Select(preset =>
-        {
-            var region = RegionRegistry.Get(preset.RegionKey);
-            return LocationFactoryRegistry.Create(preset.Type, preset.Name, region);
-        })
-        .ToArray();
+            .All
+            .Select(preset =>
+            {
+                var region = RegionRegistry.Get(preset.RegionKey);
+                return LocationFactoryRegistry.Create(preset.Type, preset.Name, region);
+            })
+            .ToArray();
+
+        foreach (var loc in locations)
+            world.AddLocation(loc);
+
+        ConnectRandomRoads(world, locations);
     }
 
     private static void ConnectRandomRoads(World world, Location[] locations)

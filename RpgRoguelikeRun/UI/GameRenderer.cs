@@ -27,8 +27,13 @@ public static class GameRenderer
         if (trader.LastEvent != null)
             Console.WriteLine($"Last event: {trader.LastEvent.Title}");
 
+        if (trader.LastSpoiledMessage != null){
+            Console.WriteLine();
+            Console.WriteLine($"⚠️ {trader.LastSpoiledMessage}");
+        }
+
         Console.WriteLine();
-        Console.WriteLine("WASD — идти, B — рынок, T — выйти из локации, Escape — exit");
+        Console.WriteLine("D — идти, B — рынок, T — выйти из локации, Escape — exit");
     }
 
     private static void RenderInventory(Trader trader)

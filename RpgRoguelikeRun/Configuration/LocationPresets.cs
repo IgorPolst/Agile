@@ -2,9 +2,6 @@ using RpgRoguelikeRun.Enums;
 
 namespace RpgRoguelikeRun.Configuration;
 
-/// <summary>
-/// Пресеты локаций: имя, тип и регион.
-/// </summary>
 public static class LocationPresets
 {
     public static readonly (string Name, LocationType Type, string RegionKey)[] All =
