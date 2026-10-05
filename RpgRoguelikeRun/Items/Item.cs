@@ -1,5 +1,7 @@
-using RpgRoguelikeRun.Items.Pricing;
+using RpgRoguelikeRun.Enums;
+
 namespace RpgRoguelikeRun.Items;
+
 
 public class Item : ICloneable
 {
@@ -22,7 +24,7 @@ public class Item : ICloneable
         {
             {
                 int price = Pricing.PricePipeline.CalculatePrice(this);
-                return Math.Max(1, price);   // 👈 цена не может быть ниже 1
+                return Math.Max(1, price);
             }
         }
     }

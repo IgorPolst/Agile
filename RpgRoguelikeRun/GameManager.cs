@@ -1,7 +1,6 @@
 using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Enums;
 using RpgRoguelikeRun.WorldLayer;
-using RpgRoguelikeRun.WorldLayer.Roads;
 using RpgRoguelikeRun.UI;
 using RpgRoguelikeRun.Services;
 using RpgRoguelikeRun.Services.Random;
@@ -19,7 +18,6 @@ public sealed class GameManager
         MapWidth = 80;
         MapHeight = 25;
         Difficulty = Difficulty.Normal;
-        _random = new Random();
     }
 
     // ---------- Настройки ----------
@@ -31,8 +29,6 @@ public sealed class GameManager
     private World _world = null!;
     private Trader _trader = null!;
     private bool _gameStopped;
-    private readonly Random _random;
-    private int _turnsOnRoad = 0;
     public int? Seed { get; set; }
 
     // ---------- Init ----------
@@ -83,7 +79,6 @@ public sealed class GameManager
         while (!_gameStopped)
         {
             HandleInput();
-            Update();
             Render();
         }
 
@@ -96,31 +91,14 @@ public sealed class GameManager
     // ---------- Input ----------
     private void HandleInput()
     {
-        var key = Console.ReadKey(true);
-        ConsoleKey code = key.Key; 
+        var command = InputHandler.ReadCommand();
 
-        switch (code)
+        switch (command)
         {
-            case ConsoleKey.Escape:
-                _gameStopped = true;
-                break;
-
-            case ConsoleKey.UpArrow:
-            case ConsoleKey.W:
-            case ConsoleKey.DownArrow:
-            case ConsoleKey.S:
-            case ConsoleKey.LeftArrow:
-            case ConsoleKey.A:
-            case ConsoleKey.RightArrow:
-            case ConsoleKey.D:
-                DoTurn();
-                break;
-            case ConsoleKey.B:
-                MarketMenu.Open(_trader);
-                break;
-            case ConsoleKey.T:
-                TravelFromLocation();
-                break;
+            case GameCommand.Exit:        _gameStopped = true; break;
+            case GameCommand.Step:        DoTurn(); break;
+            case GameCommand.OpenMarket:  MarketMenu.Open(_trader); break;
+            case GameCommand.Travel:      TravelFromLocation(); break;
         }
     }
 
@@ -147,50 +125,8 @@ public sealed class GameManager
     }
 
 
-    private void Update()
-    {
-    }
-
-    // ---------- Render ----------
    private void Render()
     {
-        Console.Clear();
-        Console.WriteLine($"=== Medieval Trader | {Difficulty} | {MapWidth}x{MapHeight} ===");
-        Console.WriteLine($"Trader: {_trader.Name} | Gold: {_trader.Gold}");
-
-        // Инвентарь
-        Console.WriteLine();
-        Console.WriteLine("--- Инвентарь ---");
-        if (_trader.Inventory.Stacks.Count == 0)
-            Console.WriteLine("  (пусто)");
-        else
-            foreach (var stack in _trader.Inventory.Stacks)
-                Console.WriteLine($"  • {stack}");
-
-        // Текущее местоположение
-        Console.WriteLine();
-        if (_trader.CurrentLocation is Location loc)
-        {
-            Console.WriteLine($"📍 Локация: {loc.Name} ({loc.Type})");
-            Console.WriteLine($"   Рынок: {loc.Market.Lots.Count} лотов");
-            Console.WriteLine($"   Дорог отсюда: {loc.OutgoingRoads.Count}");
-            foreach (var r in loc.OutgoingRoads)
-                Console.WriteLine($"      → {r.Destination?.Name ?? "?"} | {r.TravelTime} ходов | пошлина {r.TollCost}");
-        }
-        else if (_trader.CurrentRoad is Road road)
-        {
-            Console.WriteLine($"В пути: {road.Name} → {road.Destination?.Name ?? "?"}");
-            Console.WriteLine($"   Прогресс: {_trader.TurnsOnRoad}/{road.TravelTime}");
-            Console.WriteLine($"   Bandit chance: {road.BanditChance:P0} | Friend chance: {road.FriendlyChance:P0}");
-        }
-
-        if (_trader.IsDelayed)
-            Console.WriteLine($"Задержан на {_trader.DaysDelayed} ход(ов)");
-
-        if (_trader.LastEvent != null)
-            Console.WriteLine($"Last event: {_trader.LastEvent.Title}");
-
-        Console.WriteLine();
-        Console.WriteLine("WASD — идти, B — рынок, T — выйти из локации, Escape — exit");
+        GameRenderer.Render(_trader, _world, Difficulty, MapWidth, MapHeight);
     }
 }

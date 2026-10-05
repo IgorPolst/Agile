@@ -9,9 +9,4 @@ public class Enemy : Creature
     {
         // Враги тоже двигаются по миру
     }
-
-    public void Trade()
-    {
-        // На диаграмме у Enemy указан Trade() — оставляем как есть
-    }
 }

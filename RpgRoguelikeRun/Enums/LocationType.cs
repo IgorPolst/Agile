@@ -1,4 +1,4 @@
-namespace RpgRoguelikeRun.WorldLayer;
+namespace RpgRoguelikeRun.Enums;
 
 public enum LocationType
 {

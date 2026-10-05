@@ -1,3 +1,6 @@
+using RpgRoguelikeRun.Enums;
+using RpgRoguelikeRun.WorldLayer.Regions;
+
 namespace RpgRoguelikeRun.WorldLayer.Locations.Factory;
 
 public static class LocationFactoryRegistry
@@ -18,6 +21,6 @@ public static class LocationFactoryRegistry
         return factory;
     }
 
-    public static Location Create(LocationType type, string name)
-        => Get(type).Create(name);
+    public static Location Create(LocationType type, string name, IRegionStrategy region)
+        => Get(type).Create(name, region);
 }

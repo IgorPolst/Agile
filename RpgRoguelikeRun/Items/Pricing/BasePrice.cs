@@ -1,5 +1,3 @@
-using RpgRoguelikeRun.Items;
-
 namespace RpgRoguelikeRun.Items.Pricing;
 
 public class BasePrice : IPriceModifier

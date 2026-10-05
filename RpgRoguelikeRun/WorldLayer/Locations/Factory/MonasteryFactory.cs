@@ -1,5 +1,4 @@
-using RpgRoguelikeRun.Configuration;
-
+using RpgRoguelikeRun.Enums;
 namespace RpgRoguelikeRun.WorldLayer.Locations.Factory;
 public class MonasteryFactory : LocationFactory
 {

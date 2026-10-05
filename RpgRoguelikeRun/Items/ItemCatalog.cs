@@ -1,4 +1,6 @@
 using RpgRoguelikeRun.Services.Random;
+using RpgRoguelikeRun.Enums;
+
 
 namespace RpgRoguelikeRun.Items;
 
@@ -66,9 +68,9 @@ public static class ItemCatalog
         double roll = GameRandom.NextDouble();
         return roll switch
         {
-            < 0.70 => ItemRarity.Common,
-            < 0.90 => ItemRarity.Uncommon,
-            < 0.98 => ItemRarity.Rare,
+            < UncommonThreshold => ItemRarity.Common,
+            < RareThreshold => ItemRarity.Uncommon,
+            < LegendaryThreshold => ItemRarity.Rare,
             _      => ItemRarity.Legendary
         };
     }
@@ -78,12 +80,19 @@ public static class ItemCatalog
         double roll = GameRandom.NextDouble();
         return roll switch
         {
-            < 0.10 => ItemQuality.Poor,
-            < 0.70 => ItemQuality.Common,
-            < 0.95 => ItemQuality.Good,
+            < PoorThreshold => ItemQuality.Poor,
+            < CommonThreshold => ItemQuality.Common,
+            < GooThreshold => ItemQuality.Good,
             _      => ItemQuality.Excellent
         };
     }
 
     public static IEnumerable<string> Keys => _prototypes.Keys;
+    private const double LegendaryThreshold = 0.98;
+    private const double RareThreshold = 0.90;
+    private const double UncommonThreshold   = 0.70;
+    private const double PoorThreshold   = 0.10;
+    private const double CommonThreshold   = 0.70;
+    private const double GooThreshold   = 0.95;
+
 }

@@ -1,4 +1,4 @@
-using RpgRoguelikeRun.Items;
+using RpgRoguelikeRun.Enums;
 
 namespace RpgRoguelikeRun.WorldLayer;
 

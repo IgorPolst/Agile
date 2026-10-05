@@ -1,40 +1,42 @@
-using RpgRoguelikeRun.WorldLayer;
+using RpgRoguelikeRun.Enums;
 
 namespace RpgRoguelikeRun.Configuration;
 
+/// <summary>
+/// Пресеты локаций: имя, тип и регион.
+/// </summary>
 public static class LocationPresets
 {
-    public static readonly (string Name, LocationType Type)[] All =
+    public static readonly (string Name, LocationType Type, string RegionKey)[] All =
     {
-        
-        ("Дубровка",       LocationType.Village),
-        ("Берёзовка",      LocationType.Village),
-        ("Кленово",        LocationType.Village),
-        ("Сосновка",       LocationType.Village),
-        ("Ольховка",       LocationType.Village),
+        ("Дубровка",       LocationType.Village, "coastal"),
+        ("Берёзовка",      LocationType.Village, "forest"),
+        ("Кленово",        LocationType.Village, "mountain"),
+        ("Сосновка",       LocationType.Village, "forest"),
+        ("Ольховка",       LocationType.Village, "coastal"),
 
-        ("Столица",        LocationType.Town),
-        ("Североград",     LocationType.Town),
-        ("Каменск",        LocationType.Town),
-        ("Белгород",       LocationType.Town),
-        ("Златоуст",       LocationType.Town),
+        ("Столица",        LocationType.Town, "forest"),
+        ("Североград",     LocationType.Town, "mountain"),
+        ("Каменск",        LocationType.Town, "mountain"),
+        ("Белгород",       LocationType.Town, "forest"),
+        ("Златоуст",       LocationType.Town, "coastal"),
 
-        ("Каир",           LocationType.Port),
-        ("Северный порт",  LocationType.Port),
-        ("Вольный порт",   LocationType.Port),
-        ("Южный мыс",      LocationType.Port),
-        ("Три маяка",      LocationType.Port),
+        ("Каир",           LocationType.Port, "forest"),
+        ("Северный порт",  LocationType.Port, "mountain"),
+        ("Вольный порт",   LocationType.Port, "coastal"),
+        ("Южный мыс",      LocationType.Port, "coastal"),
+        ("Три маяка",      LocationType.Port, "coastal"),
 
-        ("Дорн",           LocationType.Mine),
-        ("Глубокий рудник", LocationType.Mine),
-        ("Железный кряж",  LocationType.Mine),
-        ("Соляная яма",    LocationType.Mine),
-        ("Медный холм",    LocationType.Mine),
+        ("Дорн",           LocationType.Mine, "mountain"),
+        ("Глубокий рудник", LocationType.Mine, "mountain"),
+        ("Железный кряж",  LocationType.Mine, "forest"),
+        ("Соляная яма",    LocationType.Mine, "coastal"),
+        ("Медный холм",    LocationType.Mine, "mountain"),
 
-        ("Аббатство",      LocationType.Monastery),
-        ("Святой крест",   LocationType.Monastery),
-        ("Тихая обитель",  LocationType.Monastery),
-        ("Высокий скит",   LocationType.Monastery),
-        ("Лесная келья",   LocationType.Monastery),
+        ("Аббатство",      LocationType.Monastery, "forest"),
+        ("Святой крест",   LocationType.Monastery, "mountain"),
+        ("Тихая обитель",  LocationType.Monastery, "coastal"),
+        ("Высокий скит",   LocationType.Monastery, "mountain"),
+        ("Лесная келья",   LocationType.Monastery, "forest"),
     };
 }

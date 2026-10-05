@@ -1,5 +1,6 @@
 using RpgRoguelikeRun.Items;
 using RpgRoguelikeRun.Items.Pricing;
+using RpgRoguelikeRun.Enums;
 using Xunit;
 
 namespace RpgRoguelikeRun.Tests;

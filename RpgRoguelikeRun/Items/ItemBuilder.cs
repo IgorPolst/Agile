@@ -1,3 +1,4 @@
+using RpgRoguelikeRun.Enums;
 namespace RpgRoguelikeRun.Items;
 
 public class ItemBuilder

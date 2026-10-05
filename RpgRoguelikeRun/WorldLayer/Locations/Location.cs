@@ -1,20 +1,24 @@
-using RpgRoguelikeRun.WorldLayer;
 using RpgRoguelikeRun.WorldLayer.Roads;
+using RpgRoguelikeRun.Enums;
+using RpgRoguelikeRun.WorldLayer.Regions;
 
 namespace RpgRoguelikeRun.WorldLayer;
+
 
 public class Location
 {
     public string Name { get; }
     public LocationType Type { get; }
+    public IRegionStrategy Region { get; }
     public Market Market { get; }
 
     public List<Road> OutgoingRoads { get; } = new();
 
-    public Location(string name, LocationType type, Market market)
+    public Location(string name, LocationType type, IRegionStrategy region, Market market)
     {
         Name = name;
         Type = type;
+        Region = region;
         Market = market;
     }
 
@@ -33,5 +37,5 @@ public class Location
         return road;
     }
 
-    public override string ToString() => $"{Name} ({Type})";
+     public override string ToString() => $"{Name} ({Type}, {Region.Name})";
 }

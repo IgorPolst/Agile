@@ -1,6 +1,5 @@
 using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Items;
-using RpgRoguelikeRun.Entities;
 
 namespace RpgRoguelikeRun.Services;
 

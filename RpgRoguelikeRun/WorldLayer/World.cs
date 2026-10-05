@@ -15,20 +15,19 @@ public class World
     public List<RoadEventFactory> EventFactories { get; } = new();
     public List<RoadFactory> RoadFactories { get; } = new();
      public List<Location> Locations { get; } = new();
-    public List<Road> Road { get; } = new();
+    public List<Road> Roads { get; } = new();
 
     public World(int width, int height)
     {
         Map = new WorldMap(width, height);
     }
 
-    // ---------- Trader / Enemy ----------
 
     public void AddTrader(Trader trader) => Trader = trader;
     public void AddEnemy(Enemy enemy) => Enemies.Add(enemy);
     public void RemoveEnemy(Enemy enemy) => Enemies.Remove(enemy);
 
-    // ---------- Локации ----------
+
     public void AddLocation(Location location) => Locations.Add(location);
 
     public Location GetRandomLocation()
@@ -52,12 +51,9 @@ public class World
         trader.EnterLocation(destination);
     }
 
-    // ---------- Регистрация фабрик ----------
-
     public void RegisterEventFactory(RoadEventFactory factory) => EventFactories.Add(factory);
     public void RegisterRoadFactory(RoadFactory factory) => RoadFactories.Add(factory);
 
-    // ---------- Дороги ----------
 
     public Road CreateRandomRoad()
     {
@@ -71,10 +67,9 @@ public class World
     public void GenerateRoads(int count)
     {
         for (int i = 0; i < count; i++)
-            Road.Add(CreateRandomRoad());
+            Roads.Add(CreateRandomRoad());
     }
 
-    // ---------- События ----------
     public RoadEvent? TriggerRandomRoadEvent(Trader trader, Road road)
     {
         if (EventFactories.Count == 0) return null;
@@ -118,8 +113,6 @@ public class World
         if (roadEvent.TriggersStormDamage)
             road.ApplyStorm();
     }
-
-    // ---------- Экономика ----------
 
     public bool TryPayToll(Road road, Trader trader)
     {

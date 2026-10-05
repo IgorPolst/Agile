@@ -1,4 +1,4 @@
-namespace RpgRoguelikeRun.Items;
+namespace RpgRoguelikeRun.Enums;
 
 public enum ItemRarity
 {

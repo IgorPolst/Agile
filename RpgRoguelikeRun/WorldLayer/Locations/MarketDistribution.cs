@@ -1,14 +1,17 @@
 using RpgRoguelikeRun.Items;
+using RpgRoguelikeRun.Enums;
 using RpgRoguelikeRun.Services.Random;
 
 namespace RpgRoguelikeRun.WorldLayer;
 
 public static class MarketDistribution
 {
+    private const int MinBaseQuantity = 5;
+    private const int MaxBaseQuantity = 20;
 
     public static int RollQuantity(Item item)
     {
-        int baseQty = GameRandom.Next(5, 21);
+        int baseQty = GameRandom.Next(MinBaseQuantity, MaxBaseQuantity + 1);
 
         double qualityFactor = item.Quality switch
         {

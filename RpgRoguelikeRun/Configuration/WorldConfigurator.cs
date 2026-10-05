@@ -5,6 +5,8 @@ using RpgRoguelikeRun.WorldLayer.Locations.Factory;
 using RpgRoguelikeRun.WorldLayer.Roads;
 using RpgRoguelikeRun.WorldLayer.Roads.Factory;
 using RpgRoguelikeRun.Services.Random;
+using RpgRoguelikeRun.WorldLayer.Regions;
+
 
 namespace RpgRoguelikeRun.Configuration;
 
@@ -57,14 +59,13 @@ public static class WorldConfigurator
     private static void ConfigureLocations(World world)
     {
         var locations = LocationPresets
-            .All
-            .Select(preset => LocationFactoryRegistry.Create(preset.Type, preset.Name))
-            .ToArray();
-
-        foreach (var loc in locations)
-            world.AddLocation(loc);
-
-        ConnectRandomRoads(world, locations);
+        .All
+        .Select(preset =>
+        {
+            var region = RegionRegistry.Get(preset.RegionKey);
+            return LocationFactoryRegistry.Create(preset.Type, preset.Name, region);
+        })
+        .ToArray();
     }
 
     private static void ConnectRandomRoads(World world, Location[] locations)
