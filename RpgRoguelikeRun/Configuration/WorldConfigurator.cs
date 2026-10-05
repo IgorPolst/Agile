@@ -24,17 +24,46 @@ public static class WorldConfigurator
 
     private static void ConfigureEventFactories(World world, Difficulty difficulty)
     {
-        var config = difficulty switch
+        // ---------- Бандиты ----------
+        var banditConfig = difficulty switch
         {
-            Difficulty.Easy   => (banditDamage: 20, stormDays: 1, merchantBonus: 40),
-            Difficulty.Normal => (banditDamage: 50, stormDays: 1, merchantBonus: 25),
-            Difficulty.Hard   => (banditDamage: 80, stormDays: 2, merchantBonus: 15),
-            _                 => (banditDamage: 50, stormDays: 1, merchantBonus: 25)
+            Difficulty.Easy   => (damage: 10, stealChance: 0.2, maxStolen: 1),
+            Difficulty.Normal => (damage: 25, stealChance: 0.3, maxStolen: 2),
+            Difficulty.Hard   => (damage: 40, stealChance: 0.5, maxStolen: 3),
+            _                 => (damage: 25, stealChance: 0.3, maxStolen: 2)
         };
 
-        world.RegisterEventFactory(new BanditAmbushFactory(config.banditDamage));
-        world.RegisterEventFactory(new StormFactory(config.stormDays));
-        world.RegisterEventFactory(new HelpfulMerchantFactory(config.merchantBonus));
+        world.RegisterEventFactory(new BanditAmbushFactory(
+            banditConfig.damage,
+            banditConfig.stealChance,
+            banditConfig.maxStolen));
+
+        // ---------- Шторм ----------
+        var stormConfig = difficulty switch
+        {
+            Difficulty.Easy   => 1,
+            Difficulty.Normal => 1,
+            Difficulty.Hard   => 2,
+            _                 => 1
+        };
+
+        world.RegisterEventFactory(new StormFactory(stormConfig));
+
+        // ---------- Купец ----------
+        var merchantConfig = difficulty switch
+        {
+            Difficulty.Easy   => 40,
+            Difficulty.Normal => 25,
+            Difficulty.Hard   => 15,
+            _                 => 25
+        };
+
+        world.RegisterEventFactory(new HelpfulMerchantFactory(merchantConfig));
+
+        // ---------- Новые эффекты дороги ----------
+        world.RegisterEventFactory(new SunnyDayFactory());
+        world.RegisterEventFactory(new CloudyDayFactory());
+        world.RegisterEventFactory(new WanderingKnightFactory());
     }
 
     // ---------- Дороги ----------

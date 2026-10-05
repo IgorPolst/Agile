@@ -57,7 +57,7 @@ public static class GameRenderer
 
         if (trader.CurrentLocation is Location loc)
         {
-            Console.WriteLine($"Локация: {loc.Name} ({loc.Type}, регион: {loc.Region.Name})");
+            Console.WriteLine($"Локация: {loc.Type}, {loc.Name}, регион: {loc.Region.Name}");
             Console.WriteLine($"   Рынок: {loc.Market.Lots.Count} лотов");
             Console.WriteLine($"   Дорог отсюда: {loc.OutgoingRoads.Count}");
 

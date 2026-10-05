@@ -37,5 +37,5 @@ public class Location
         return road;
     }
 
-     public override string ToString() => $"{Name} ({Type}, {Region.Name})";
+     public override string ToString() => $"{Type}, {Name}, регион: {Region.Name}";
 }

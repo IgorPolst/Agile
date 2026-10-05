@@ -81,8 +81,8 @@ public static class MarketMenu
             for (int i = 0; i < lots.Count; i++)
             {
                 var lot = lots[i];
-                int price = trader.CurrentLocation.Market.GetBuyPrice(lot);
-                Console.WriteLine($"  [{i + 1}] {lot.Item.Name} x{lot.Quantity} — {price}/шт");
+                int buyPrice = trader.CurrentLocation.Market.GetBuyPrice(lot);
+                Console.WriteLine($"  [{i + 1}] {lot.Item.GetPublicDescription()} x{lot.Quantity} — {buyPrice} золотых");
             }
 
             Console.WriteLine();
@@ -91,12 +91,10 @@ public static class MarketMenu
             int choice = ReadChoice(lots.Count);
             if (choice == 0) return;
 
-
             var chosenLot = lots[choice - 1];
-            Console.Write($"\nСколько купить? (есть {chosenLot.Quantity}, 0 — отмена): ");
-            if (!int.TryParse(Console.ReadLine(), out int qty)) continue;
+            Console.Write($"\nСколько купить? (есть {chosenLot.Quantity}, Escape — отмена): ");
+            int qty = ReadChoice(chosenLot.Quantity);
             if (qty == 0) continue;
-            if (qty < 0 || qty > chosenLot.Quantity) continue;
 
             trader.Buy(chosenLot.Item, qty);
             Console.WriteLine("Нажмите любую клавишу...");
@@ -121,8 +119,8 @@ public static class MarketMenu
             for (int i = 0; i < stacks.Count; i++)
             {
                 var stack = stacks[i];
-                int price = trader.CurrentLocation!.Market.GetSellPrice(stack.Item, stack.Quantity);
-                Console.WriteLine($"  [{i + 1}] {stack.Item.Name} x{stack.Quantity} — {price}/шт");
+                int sellPrice = trader.CurrentLocation!.Market.GetSellPrice(stack.Item, stack.Quantity);
+                Console.WriteLine($"  [{i + 1}] {stack.Item.GetFullDescription()} x{stack.Quantity} — {sellPrice} золотых");
             }
 
             Console.WriteLine();
@@ -132,10 +130,9 @@ public static class MarketMenu
             if (choice == 0) return;
 
             var chosenStack = stacks[choice - 1];
-            Console.Write($"\nСколько продать? (есть {chosenStack.Quantity}, 0 — отмена): ");
-            if (!int.TryParse(Console.ReadLine(), out int qty)) continue;
+            Console.Write($"\nСколько продать? (есть {chosenStack.Quantity}, Escape — отмена): ");
+            int qty = ReadChoice(chosenStack.Quantity);
             if (qty == 0) continue;
-            if (qty < 0 || qty > chosenStack.Quantity) continue;
 
             trader.Sell(chosenStack.Item, qty);
             Console.WriteLine("Нажмите любую клавишу...");

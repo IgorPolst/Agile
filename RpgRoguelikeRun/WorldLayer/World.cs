@@ -74,7 +74,7 @@ public class World
     {
         if (EventFactories.Count == 0) return null;
 
-        RoadEvent? roadEvent = PickEventForRoad(road);
+        RoadEvent? roadEvent = PickEventForRoad(road, trader);
         if (roadEvent == null) return null;
 
         roadEvent.Trigger(trader);
@@ -85,13 +85,19 @@ public class World
         return roadEvent;
     }
 
-    private RoadEvent? PickEventForRoad(Road road)
+    private RoadEvent? PickEventForRoad(Road road, Trader trader)
     {
         double roll = GameRandom.NextDouble();
 
-        bool wantHostile = roll < road.BanditChance;
-        bool wantFriendly = !wantHostile
-                            && roll < road.BanditChance + road.FriendlyChance;
+        const double NeutralShare = 0.40;
+        
+        double effectiveBanditChance = Math.Clamp(road.BanditChance + trader.BanditChanceBonus, 0.0, 1.0);
+
+    double hostileThreshold  = effectiveBanditChance * (1 - NeutralShare);
+    double friendlyThreshold = hostileThreshold + road.FriendlyChance * (1 - NeutralShare);
+
+        bool wantHostile  = roll < hostileThreshold;
+        bool wantFriendly = !wantHostile && roll < friendlyThreshold;
 
         List<RoadEventFactory> candidates = wantHostile
             ? EventFactories.Where(f => f.ProducesHostile).ToList()

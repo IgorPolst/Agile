@@ -24,6 +24,27 @@ public class Trader : Creature
     public RoadEvent? LastEvent { get; private set; }
     public List<RoadEvent> EventLog { get; } = new();
 
+    // ---------- Эффекты событий ----------
+
+    public int BonusSteps { get; private set; } = 0;
+    public double BanditChanceBonus { get; private set; } = 0.0;
+
+    public void ApplyBonusSteps(int steps)
+    {
+        BonusSteps += steps;
+    }
+
+    public void ResetTurnBonuses()
+    {
+        BonusSteps = 0;
+        BanditChanceBonus = 0.0;
+    }
+
+    public void ApplyBanditChanceBonus(double bonus)
+    {
+        BanditChanceBonus += bonus;
+    }
+
     public Trader(string name, int gold = 0, int capacity = 20)
         : base(name, gold)
     {

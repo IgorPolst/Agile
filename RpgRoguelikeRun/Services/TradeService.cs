@@ -61,7 +61,7 @@ public static class TradeService
             market.Lots.Last().RegisterTrade(quantity);
         }
 
-        trader.RegisterTrade(new TradeRecord(item.Name, quantity, pricePerUnit, isPurchase: true));
+        trader.RegisterTrade(new TradeRecord(item.Name, quantity, pricePerUnit, isPurchase: false));
         return null;
     }
 }

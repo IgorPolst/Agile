@@ -8,7 +8,7 @@ public class BanditAmbush : RoadEvent
     public override string Title => "Засада разбойников";
     public override bool IsHostile => true;
     public int Damage { get; init; } = 50;
-    public double DamageVariance { get; init; } = 0.3;
+    public double DamageVariance { get; init; } = 0.2;
     public double StealChance { get; init; } = 0.5;
     public int MaxStolenItems { get; init; } = 2;
 

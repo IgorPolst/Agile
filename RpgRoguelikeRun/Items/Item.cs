@@ -76,9 +76,37 @@ public class Item : ICloneable
         };
     }
 
+    public string GetPublicDescription()
+    {
+        return $"{Name} [{Quality}, {Rarity}]";
+    }
+
+    public string GetFullDescription()
+    {
+        var parts = new List<string>
+        {
+            $"{Name}",
+            $"Категория: {Category}",
+            $"Редкость: {Rarity}",
+            $"Качество: {Quality}",
+            $"Цена: {CurrentCost}"
+        };
+
+        if (IsPerishable)
+        {
+            parts.Add($"Срок годности: {ShelfLifeDays} дней");
+            parts.Add($"Пролежал: {DaysInStorage} дней");
+            parts.Add(IsSpoiled ? "⚠️ ИСПОРЧЕН" : "✓ Свежий");
+        }
+        else
+        {
+            parts.Add("Не портится");
+        }
+
+        return string.Join(" | ", parts);
+    }
     
 
     public override string ToString()
-        => $"{Name} [{Category}/{Rarity}] cost={CurrentCost} q={Quality}" +
-           (IsPerishable ? $" shelf={ShelfLifeDays}d, stored={DaysInStorage}d" : "");
+        => GetFullDescription();
 }
