@@ -1,4 +1,5 @@
 using RpgRoguelikeRun.Services.Random;
+
 using Xunit;
 
 namespace RpgRoguelikeRun.Tests;

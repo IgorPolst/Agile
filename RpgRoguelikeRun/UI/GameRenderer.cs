@@ -15,6 +15,7 @@ public static class GameRenderer
         int mapHeight)
     {
         Console.Clear();
+
         Console.WriteLine($"=== Medieval Trader | {difficulty} | {mapWidth}x{mapHeight} ===");
         Console.WriteLine($"Trader: {trader.Name} | Gold: {trader.Gold}");
 
@@ -27,14 +28,16 @@ public static class GameRenderer
         if (trader.LastEvent != null)
             Console.WriteLine($"Last event: {trader.LastEvent.Title}");
 
-        if (trader.LastSpoiledMessage != null){
+        if (trader.LastSpoiledMessage != null)
+        {
             Console.WriteLine();
             Console.WriteLine($"⚠️ {trader.LastSpoiledMessage}");
         }
 
         Console.WriteLine();
-        Console.WriteLine("D — идти, B — рынок, T — выйти из локации, Escape — exit");
+        Console.WriteLine("WASD — идти, B — рынок, T — выйти из локации, Escape — exit");
     }
+
 
     private static void RenderInventory(Trader trader)
     {
@@ -48,7 +51,7 @@ public static class GameRenderer
         }
 
         foreach (var stack in trader.Inventory.Stacks)
-            Console.WriteLine($"  • {stack}");
+            Console.WriteLine($"  • {stack.Item.GetFullDescription()} x{stack.Quantity}");
     }
 
     private static void RenderLocationOrRoad(Trader trader)
@@ -62,7 +65,13 @@ public static class GameRenderer
             Console.WriteLine($"   Дорог отсюда: {loc.OutgoingRoads.Count}");
 
             foreach (var r in loc.OutgoingRoads)
-                Console.WriteLine($"      → {r.Destination?.Name ?? "?"} | {r.TravelTime} ходов | пошлина {r.TollCost}");
+            {
+                var dest = r.Destination;
+                string destLabel = dest != null
+                    ? $"{dest.Type}, {dest.Name}, регион: {dest.Region.Name}"
+                    : "?";
+                Console.WriteLine($"      → {destLabel} | {r.TravelTime} ходов | пошлина {r.TollCost}");
+            }
         }
         else if (trader.CurrentRoad is Road road)
         {

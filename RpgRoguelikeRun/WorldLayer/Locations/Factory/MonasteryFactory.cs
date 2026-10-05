@@ -6,5 +6,5 @@ public class MonasteryFactory : LocationFactory
 {
     public override Location Create(string name, IRegionStrategy region)
         => new Location(name, LocationType.Monastery, region,
-                        MarketFactory.CreatePortMarket(region));
+                        MarketFactory.CreateMonasteryMarket(region));
 }

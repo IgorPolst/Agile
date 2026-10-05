@@ -12,7 +12,7 @@ public class WanderingKnight : RoadEvent
         Console.WriteLine($"   [Y] Нанять, [N] Отказаться");
 
         var key = Console.ReadKey(true).Key;
-        if (key == ConsoleKey.Escape || key != ConsoleKey.Y)
+        if (key != ConsoleKey.Y)
         {
             Console.WriteLine("   Вы отказались.");
             return;

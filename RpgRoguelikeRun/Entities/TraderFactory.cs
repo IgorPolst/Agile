@@ -18,16 +18,33 @@ public static class TraderFactory
         var allKeys = ItemCatalog.Keys.ToList();
         int remaining = budget;
 
-        while (remaining > 0)
+        allKeys.Sort((a, b) =>
+            ItemCatalog.Create(a).BaseCost.CompareTo(ItemCatalog.Create(b).BaseCost));
+
+        int attempts = 0;
+        while (remaining > 0 && attempts < 100)
         {
-            string key = allKeys[GameRandom.Next(0, allKeys.Count)];
+            attempts++;
+            var affordable = allKeys
+                .Where(k => ItemCatalog.Create(k).BaseCost <= remaining)
+                .ToList();
+
+            if (affordable.Count == 0) break;
+
+            string key = affordable[GameRandom.Next(0, affordable.Count)];
             Item item = ItemCatalog.Create(key);
 
-            int price = item.BaseCost;
-            if (price > remaining) break;
-
             trader.Inventory.Add(item);
-            remaining -= price;
+            remaining -= item.BaseCost;
+        }
+
+        if (trader.Inventory.Stacks.Count == 0)
+        {
+            string cheapest = allKeys
+                .OrderBy(k => ItemCatalog.Create(k).BaseCost)
+                .First();
+
+            trader.Inventory.Add(ItemCatalog.Create(cheapest));
         }
     }
 }

@@ -65,12 +65,17 @@ public static class MarketMenu
     }
 
     // ---------- ЦИКЛИЧНАЯ ПОКУПКА ----------
-        private static void BuyLoop(Trader trader)
+    private static void BuyLoop(Trader trader)
     {
         while (true)
         {
             var lots = trader.CurrentLocation!.Market.Lots;
-            if (lots.Count == 0) { Console.WriteLine("Рынок пуст."); Console.ReadKey(true); return; }
+            if (lots.Count == 0)
+            {
+                Console.WriteLine("Рынок пуст.");
+                Console.ReadKey(true);
+                return;
+            }
 
             Console.Clear();
             Console.WriteLine("=== КУПИТЬ ===");
@@ -81,22 +86,24 @@ public static class MarketMenu
             for (int i = 0; i < lots.Count; i++)
             {
                 var lot = lots[i];
-                int buyPrice = trader.CurrentLocation.Market.GetBuyPrice(lot);
-                Console.WriteLine($"  [{i + 1}] {lot.Item.GetPublicDescription()} x{lot.Quantity} — {buyPrice} золотых");
+                int buyPrice = trader.CurrentLocation.Market.GetBuyPrice(lot);   // 👈 GetBuyPrice!
+                Console.WriteLine($"  [{i + 1}] {lot.Item.GetPublicDescription()} x{lot.Quantity} — {buyPrice}/шт");
             }
 
             Console.WriteLine();
             Console.WriteLine("Введите номер товара или Escape — выйти.");
 
-            int choice = ReadChoice(lots.Count);
+            int choice = ConsoleReader.ReadChoice(lots.Count);
             if (choice == 0) return;
 
             var chosenLot = lots[choice - 1];
-            Console.Write($"\nСколько купить? (есть {chosenLot.Quantity}, Escape — отмена): ");
-            int qty = ReadChoice(chosenLot.Quantity);
+            Console.WriteLine();
+            Console.Write($"Сколько купить? (есть {chosenLot.Quantity}, Escape — отмена): ");
+            int qty = ConsoleReader.ReadChoice(chosenLot.Quantity);
             if (qty == 0) continue;
 
             trader.Buy(chosenLot.Item, qty);
+            Console.WriteLine();
             Console.WriteLine("Нажмите любую клавишу...");
             Console.ReadKey(true);
         }
@@ -126,68 +133,21 @@ public static class MarketMenu
             Console.WriteLine();
             Console.WriteLine("Введите номер товара или Escape — выйти.");
             
-            int choice = ReadChoice(stacks.Count);
+            int choice = ConsoleReader.ReadChoice(stacks.Count);
             if (choice == 0) return;
 
             var chosenStack = stacks[choice - 1];
-            Console.Write($"\nСколько продать? (есть {chosenStack.Quantity}, Escape — отмена): ");
-            int qty = ReadChoice(chosenStack.Quantity);
+            Console.WriteLine();
+            Console.WriteLine($"Сколько продать? (есть {chosenStack.Quantity}, Escape — отмена): ");
+            int qty = ConsoleReader.ReadChoice(chosenStack.Quantity);
             if (qty == 0) continue;
 
             trader.Sell(chosenStack.Item, qty);
+            Console.WriteLine();
             Console.WriteLine("Нажмите любую клавишу...");
             Console.ReadKey(true);
             
         }
     }
 
-    private static int ReadChoice(int max)
-    {
-        int number = 0;
-        bool hasDigit = false;
-
-        while (true)
-        {
-            var key = Console.ReadKey(intercept: true);
-
-            if (key.Key == ConsoleKey.Escape)
-            {
-                Console.WriteLine();
-                return 0;
-            }
-
-            if (key.Key == ConsoleKey.Enter)
-            {
-                if (hasDigit) return number;
-                continue;
-            }
-
-            if (key.Key == ConsoleKey.Backspace)
-            {
-                if (hasDigit)
-                {
-                    number /= 10;
-                    hasDigit = number > 0;
-                    Console.Write("\b \b");
-                }
-                continue;
-            }
-
-            // Цифры (сверху и на numpad)
-            if ((key.Key >= ConsoleKey.D0 && key.Key <= ConsoleKey.D9) ||
-                (key.Key >= ConsoleKey.NumPad0 && key.Key <= ConsoleKey.NumPad9))
-            {
-                int digit = key.Key >= ConsoleKey.NumPad0
-                    ? key.Key - ConsoleKey.NumPad0
-                    : key.Key - ConsoleKey.D0;
-
-                int candidate = number * 10 + digit;
-                if (candidate > max) continue;   // игнорируем, если > max
-
-                number = candidate;
-                hasDigit = true;
-                Console.Write(digit);
-            }
-        }
-    }
 }

@@ -82,7 +82,7 @@ public static class ItemCatalog
         {
             < PoorThreshold => ItemQuality.Poor,
             < CommonThreshold => ItemQuality.Common,
-            < GooThreshold => ItemQuality.Good,
+            < GoodThreshold => ItemQuality.Good,
             _      => ItemQuality.Excellent
         };
     }
@@ -93,6 +93,6 @@ public static class ItemCatalog
     private const double UncommonThreshold   = 0.70;
     private const double PoorThreshold   = 0.10;
     private const double CommonThreshold   = 0.70;
-    private const double GooThreshold   = 0.95;
+    private const double GoodThreshold = 0.95;
 
 }

@@ -1,4 +1,5 @@
 using RpgRoguelikeRun.Items;
+using RpgRoguelikeRun.Enums;
 using Xunit;
 
 namespace RpgRoguelikeRun.Tests;

@@ -7,5 +7,5 @@ public class TownFactory : LocationFactory
 {
     public override Location Create(string name, IRegionStrategy region)
         => new Location(name, LocationType.Town, region,
-                        MarketFactory.CreateVillageMarket(region));
+                        MarketFactory.CreateTownMarket(region));
 }

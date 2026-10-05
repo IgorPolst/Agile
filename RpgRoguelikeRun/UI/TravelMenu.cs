@@ -34,9 +34,10 @@ public static class TravelMenu
                 : "?";
             Console.WriteLine($"  [{i + 1}] → {destLabel} | {r.Name} | {r.TravelTime} ходов | пошлина {r.TollCost}");
         }
-        Console.WriteLine("  [0] Остаться");
-
+        
+        Console.WriteLine();
         Console.WriteLine("Куда идём? (Escape — отмена)");
+
         int choice = ConsoleReader.ReadChoice(roads.Count);
         if (choice == 0) return null;
 

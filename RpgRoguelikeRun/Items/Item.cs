@@ -105,6 +105,24 @@ public class Item : ICloneable
 
         return string.Join(" | ", parts);
     }
+
+    public string GetBuyDescription()
+    {
+        int mask = Services.Random.GameRandom.Next(0, 4);
+
+        bool showQuality = (mask & 1) != 0;
+        bool showRarity = (mask & 2) != 0;
+
+        if (!showQuality && !showRarity)
+            return $"{Name}";
+
+        var parts = new List<string> { Name };
+
+        if (showQuality) parts.Add($"Качество: {Quality}");
+        if (showRarity)  parts.Add($"Редкость: {Rarity}");
+
+        return string.Join(" | ", parts);
+    }
     
 
     public override string ToString()

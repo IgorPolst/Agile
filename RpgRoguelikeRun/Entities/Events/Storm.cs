@@ -10,8 +10,8 @@ public class Storm : RoadEvent
 
     public override void Trigger(Trader trader)
     {
-        int actualDelay = GameRandom.Next(1, DelayDays + 2);
-        trader.Delay(actualDelay);
+        int actualDelay = GameRandom.Next(-1, -(DelayDays + 2));
+        trader.ApplyBonusSteps(actualDelay);
         Console.WriteLine($"🌧️  {Title}: караван застрял на {actualDelay} ход(ов).");
     }
 }

@@ -1,3 +1,5 @@
+
+using  RpgRoguelikeRun.Game.States; 
 namespace RpgRoguelikeRun.UI;
 
 public static class InputHandler
@@ -8,7 +10,7 @@ public static class InputHandler
 
         return key switch
         {
-            ConsoleKey.Escape => GameCommand.Exit,
+            ConsoleKey.Escape => GameCommand.Pause,
             ConsoleKey.RightArrow or ConsoleKey.D => GameCommand.Step,
             ConsoleKey.B => GameCommand.OpenMarket,
             ConsoleKey.T => GameCommand.Travel,
@@ -24,5 +26,6 @@ public enum GameCommand
     Step,
     OpenMarket,
     Travel,
+    Pause,
     Exit
 }

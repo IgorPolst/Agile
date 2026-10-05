@@ -1,132 +1,39 @@
-using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Enums;
-using RpgRoguelikeRun.WorldLayer;
-using RpgRoguelikeRun.UI;
-using RpgRoguelikeRun.Services;
-using RpgRoguelikeRun.Services.Random;
+using RpgRoguelikeRun.Game;
+using RpgRoguelikeRun.Game.States;
 
 namespace RpgRoguelikeRun;
 
 public sealed class GameManager
 {
-    // ---------- Singleton ----------
     private static GameManager? _instance;
     public static GameManager Instance => _instance ??= new GameManager();
 
     private GameManager()
     {
-        MapWidth = 80;
-        MapHeight = 25;
         Difficulty = Difficulty.Normal;
     }
 
-    // ---------- Настройки ----------
-    public int MapWidth { get; set; }
-    public int MapHeight { get; set; }
+    public int MapWidth { get; set; } = 80;
+    public int MapHeight { get; set; } = 25;
     public Difficulty Difficulty { get; set; }
-
-    // ---------- Состояние ----------
-    private World _world = null!;
-    private Trader _trader = null!;
-    private bool _gameStopped;
     public int? Seed { get; set; }
 
-    // ---------- Init ----------
-    private void Init()
-    {
-        if (Seed.HasValue)
-            GameRandom.SetSeed(Seed.Value);
-        else
-            GameRandom.Reset();
-            
-        Console.CursorVisible = false;
-        _gameStopped = false;
-        
-        (_world, _trader) = GameSetupFacade.StartNewGame(MapWidth, MapHeight, Difficulty);
-
-    }
-
-    private void TravelFromLocation()
-    {
-        if (_trader.CurrentLocation == null)
-        {
-            Console.WriteLine("Вы уже в пути. Нажмите WASD, чтобы идти.");
-            Console.ReadKey(true);
-            return;
-        }
-
-        var road = TravelMenu.ChooseRoad(_trader);
-        if (road == null) return;
-
-        if (!_world.TryPayToll(road, _trader)) return;
-
-        _trader.EnterRoad(road);
-        Console.WriteLine($"Вы отправились в путь по {road.Name} → {road.Destination?.Name ?? "?"}.");
-        Console.WriteLine($"Длина дороги: {road.TravelTime} ходов. Жмите WASD, чтобы идти.");
-        Console.ReadKey(true);
-    }
-    // ---------- Run ----------
     public void Run()
     {
-        Init();
+        Console.CursorVisible = false;
 
-        Console.Clear();
-        Console.WriteLine($"Game Started with difficulty: {Difficulty}");
-        Console.WriteLine($"Map size: {MapWidth}x{MapHeight}");
-        Console.WriteLine("Press any key to start...");
-        Console.ReadKey(true);
+        var context = new GameContext(Difficulty);
+        context.ChangeState(new MenuState());
 
-        while (!_gameStopped)
+        while (!context.IsFinished)
         {
-            HandleInput();
-            Render();
+            context.CurrentState.Render(context);
+            context.CurrentState.HandleInput(context);
         }
 
         Console.CursorVisible = true;
-        Console.WriteLine($"Game over. Final gold: {_trader.Gold}");
-        Console.WriteLine("Press any key to exit.");
+        Console.WriteLine("Спасибо за игру!");
         Console.ReadKey(true);
-    }
-
-    // ---------- Input ----------
-    private void HandleInput()
-    {
-        var command = InputHandler.ReadCommand();
-
-        switch (command)
-        {
-            case GameCommand.Exit:        _gameStopped = true; break;
-            case GameCommand.Step:        DoTurn(); break;
-            case GameCommand.OpenMarket:  MarketMenu.Open(_trader); break;
-            case GameCommand.Travel:      TravelFromLocation(); break;
-        }
-    }
-
-    // ---------- Ход ----------
-    private void DoTurn()
-    {
-        double chance = Difficulty switch
-        {
-            Difficulty.Easy   => 0.20,
-            Difficulty.Normal => 0.30,
-            Difficulty.Hard   => 0.45,
-            _                 => 0.30
-        };
-
-        bool stillAlive = TurnFacade.DoTurn(_world, _trader, chance);
-
-        if (!stillAlive)
-        {
-            _gameStopped = true;
-            Console.Clear();
-            Console.WriteLine("💀 Вы обанкротились! Игра окончена.");
-            Console.ReadKey(true);
-        }      
-    }
-
-
-   private void Render()
-    {
-        GameRenderer.Render(_trader, _world, Difficulty, MapWidth, MapHeight);
     }
 }
