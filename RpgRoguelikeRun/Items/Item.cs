@@ -1,3 +1,4 @@
+using RpgRoguelikeRun.Items.Pricing;
 namespace RpgRoguelikeRun.Items;
 
 public class Item : ICloneable
@@ -19,35 +20,10 @@ public class Item : ICloneable
     {
         get
         {
-            // 1. Базовая цена = BaseCost × quality
-            double qualityMultiplier = Quality switch
             {
-                ItemQuality.Poor      => 0.7,
-                ItemQuality.Common    => 1.0,
-                ItemQuality.Good      => 1.4,
-                ItemQuality.Excellent => 2.0,
-                _                     => 1.0
-            };
-
-            double basePrice = BaseCost * qualityMultiplier;
-
-            // 2. Скидка за свежесть
-            double freshnessMultiplier = 1.0;
-
-            if (IsPerishable)
-            {
-                double usedFraction = (double)DaysInStorage / ShelfLifeDays!.Value;
-
-                freshnessMultiplier = usedFraction switch
-                {
-                    < 0.5  => 1.0,    // свежий — без скидки
-                    < 0.8  => 0.85,   // лежалый — минус 15%
-                    < 1.0  => 0.60,   // скоро испортится — минус 40%
-                    _      => 0.25    // испорчен — минус 75%
-                };
+                int price = Pricing.PricePipeline.CalculatePrice(this);
+                return Math.Max(1, price);   // 👈 цена не может быть ниже 1
             }
-
-            return Math.Max(1, (int)Math.Round(basePrice * freshnessMultiplier));
         }
     }
 

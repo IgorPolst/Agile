@@ -1,4 +1,6 @@
 using RpgRoguelikeRun.WorldLayer;
+using RpgRoguelikeRun.WorldLayer.Roads.Safety;
+
 namespace RpgRoguelikeRun.WorldLayer.Roads;
 
 public abstract class Road
@@ -10,14 +12,7 @@ public abstract class Road
     public abstract double Safety { get; }
     public Location? Destination { get; set; }
 
-    public double EffectiveSafety => Quality switch
-    {
-        RoadQuality.Paved     => Safety,              // всё ок
-        RoadQuality.Dirt      => Safety * 0.90,       // легкое снижение
-        RoadQuality.Muddy     => Safety * 0.65,       // патрули застревают
-        RoadQuality.Overgrown => Safety * 0.50,       // вообще никого
-        _                     => Safety
-    };
+    public double EffectiveSafety => SafetyPipeline.CalculateEffectiveSafety(this);
 
     public double BanditChance => 1.0 - EffectiveSafety;
     public double FriendlyChance => EffectiveSafety;
