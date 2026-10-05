@@ -1,5 +1,4 @@
-using RpgRoguelikeRun.Entities;
-
+using RpgRoguelikeRun.Services.Random;
 namespace RpgRoguelikeRun.Entities.Events;
 
 public class Storm : RoadEvent
@@ -11,7 +10,7 @@ public class Storm : RoadEvent
 
     public override void Trigger(Trader trader)
     {
-        int actualDelay = Random.Shared.Next(1, DelayDays + 2);
+        int actualDelay = GameRandom.Next(1, DelayDays + 2);
         trader.Delay(actualDelay);
         Console.WriteLine($"🌧️  {Title}: караван застрял на {actualDelay} ход(ов).");
     }

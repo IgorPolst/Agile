@@ -1,5 +1,5 @@
-using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Items;
+using RpgRoguelikeRun.Services.Random;
 
 namespace RpgRoguelikeRun.Entities.Events;
 
@@ -15,10 +15,10 @@ public class HelpfulMerchant : RoadEvent
         // 1. Золото — всегда
         double min = Bonus * (1 - BonusVariance);
         double max = Bonus * (1 + BonusVariance);
-        int actualBonus = (int)Math.Round(min + Random.Shared.NextDouble() * (max - min));
+        int actualBonus = (int)Math.Round(min + GameRandom.NextDouble() * (max - min));
 
         Item? gift = null;
-        if (Random.Shared.NextDouble() < GiftChance)
+        if (GameRandom.NextDouble() < GiftChance)
         {
             gift = PickRandomGift();
         }
@@ -45,7 +45,7 @@ public class HelpfulMerchant : RoadEvent
     private static Item PickRandomGift()
     {
         string[] gifts = { "grain", "salt", "wine", "spice" };
-        string key = gifts[Random.Shared.Next(gifts.Length)];
+        string key = gifts[GameRandom.Next(0, gifts.Length)];
         return ItemCatalog.Create(key);
     }
 }

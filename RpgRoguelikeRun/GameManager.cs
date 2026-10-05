@@ -3,8 +3,8 @@ using RpgRoguelikeRun.Enums;
 using RpgRoguelikeRun.WorldLayer;
 using RpgRoguelikeRun.WorldLayer.Roads;
 using RpgRoguelikeRun.UI;
-using RpgRoguelikeRun.Configuration;
-
+using RpgRoguelikeRun.Services;
+using RpgRoguelikeRun.Services.Random;
 
 namespace RpgRoguelikeRun;
 
@@ -33,22 +33,20 @@ public sealed class GameManager
     private bool _gameStopped;
     private readonly Random _random;
     private int _turnsOnRoad = 0;
+    public int? Seed { get; set; }
 
     // ---------- Init ----------
     private void Init()
     {
+        if (Seed.HasValue)
+            GameRandom.SetSeed(Seed.Value);
+        else
+            GameRandom.Reset();
+            
         Console.CursorVisible = false;
         _gameStopped = false;
-
-        _world = new World(MapWidth, MapHeight);
-        WorldConfigurator.Configure(_world, Difficulty);
-
-        _trader = new Trader("Ганс", gold: 100);
-        _world.AddTrader(_trader);
-        _trader = TraderFactory.CreateStartingTrader("Ганс", gold: 100);
-
-        var startLocation = _world.Locations.First();
-        _trader.EnterLocation(startLocation);
+        
+        (_world, _trader) = GameSetupFacade.StartNewGame(MapWidth, MapHeight, Difficulty);
 
     }
 
@@ -127,43 +125,8 @@ public sealed class GameManager
     }
 
     // ---------- Ход ----------
-        private void DoTurn()
+    private void DoTurn()
     {
-        if (_trader.CurrentRoad != null)
-        {
-            bool arrived = _trader.StepOnRoad();
-            TryTriggerRoadEvent();
-
-            if (arrived)
-            {
-                _world.ArriveAt(_trader);
-                Console.ReadKey(true);
-            }
-        }
-        else
-        {
-            _trader.TryMove();
-        }
-
-        CheckBankruptcy();      
-    }
-
-    private void CheckBankruptcy()
-    {
-        if (_trader.Gold <= 0 && _trader.Inventory.Stacks.Count == 0)
-        {
-            _gameStopped = true;
-            Console.Clear();
-            Console.WriteLine("💀 Вы обанкротились! Игра окончена.");
-            Console.WriteLine($"Событий пережито: {_trader.EventLog.Count}");
-            Console.ReadKey(true);
-        }
-    }
-
-        private void TryTriggerRoadEvent()
-    {
-        if (_trader.CurrentRoad == null) return;
-
         double chance = Difficulty switch
         {
             Difficulty.Easy   => 0.20,
@@ -172,14 +135,15 @@ public sealed class GameManager
             _                 => 0.30
         };
 
-        if (_random.NextDouble() < chance)
+        bool stillAlive = TurnFacade.DoTurn(_world, _trader, chance);
+
+        if (!stillAlive)
         {
+            _gameStopped = true;
             Console.Clear();
-            _world.TriggerRandomRoadEvent(_trader, _trader.CurrentRoad);
-            Console.WriteLine();
-            Console.WriteLine("Нажмите любую клавишу...");
+            Console.WriteLine("💀 Вы обанкротились! Игра окончена.");
             Console.ReadKey(true);
-        }
+        }      
     }
 
 

@@ -1,25 +1,23 @@
+using RpgRoguelikeRun.Services.Random;
+
 namespace RpgRoguelikeRun.Items;
 
 public static class ItemCatalog
 {
     private static readonly Dictionary<string, Item> _prototypes = new();
-    private static readonly Random _random = new();
 
     static ItemCatalog()
     {
         _prototypes["grain"] = new ItemBuilder()
             .WithName("Зерно")
             .WithCategory(ItemCategory.Raw)
-            .WithRarity(ItemRarity.Common)
             .WithBaseCost(3)
-            .WithQuality(ItemQuality.Common)
             .WithShelfLife(30)
             .Build();
 
         _prototypes["salt"] = new ItemBuilder()
             .WithName("Соль")
             .WithCategory(ItemCategory.Raw)
-            .WithRarity(ItemRarity.Common)
             .WithBaseCost(5)
             .WithoutShelfLife()
             .Build();
@@ -27,25 +25,20 @@ public static class ItemCatalog
         _prototypes["silk"] = new ItemBuilder()
             .WithName("Шёлк")
             .WithCategory(ItemCategory.Luxury)
-            .WithRarity(ItemRarity.Rare)
             .WithBaseCost(25)
-            .WithQuality(ItemQuality.Good)
             .WithoutShelfLife()
             .Build();
 
         _prototypes["spice"] = new ItemBuilder()
             .WithName("Пряности")
             .WithCategory(ItemCategory.Luxury)
-            .WithRarity(ItemRarity.Uncommon)
             .WithBaseCost(15)
-            .WithQuality(ItemQuality.Good)
             .WithShelfLife(60)
             .Build();
 
         _prototypes["wine"] = new ItemBuilder()
             .WithName("Вино")
             .WithCategory(ItemCategory.Luxury)
-            .WithRarity(ItemRarity.Uncommon)
             .WithBaseCost(12)
             .WithShelfLife(90)
             .Build();
@@ -53,7 +46,6 @@ public static class ItemCatalog
         _prototypes["horse"] = new ItemBuilder()
             .WithName("Лошадь")
             .WithCategory(ItemCategory.Livestock)
-            .WithRarity(ItemRarity.Uncommon)
             .WithBaseCost(80)
             .WithoutShelfLife()
             .Build();
@@ -66,12 +58,24 @@ public static class ItemCatalog
 
         Item clone = (Item)prototype.Clone();
         clone.Quality = RollQuality();
+        clone.Rarity = RollRarity();  
         return clone;
+    }
+    private static ItemRarity RollRarity()
+    {
+        double roll = GameRandom.NextDouble();
+        return roll switch
+        {
+            < 0.70 => ItemRarity.Common,
+            < 0.90 => ItemRarity.Uncommon,
+            < 0.98 => ItemRarity.Rare,
+            _      => ItemRarity.Legendary
+        };
     }
 
         private static ItemQuality RollQuality()
     {
-        double roll = _random.NextDouble();
+        double roll = GameRandom.NextDouble();
         return roll switch
         {
             < 0.10 => ItemQuality.Poor,

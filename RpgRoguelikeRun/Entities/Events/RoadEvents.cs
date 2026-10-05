@@ -1,5 +1,3 @@
-using RpgRoguelikeRun.Entities;
-
 namespace RpgRoguelikeRun.Entities.Events;
 public abstract class RoadEvent
 {

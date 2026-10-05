@@ -4,6 +4,7 @@ namespace RpgRoguelikeRun.WorldLayer;
 
 public class MarketLot
 {
+    
     public Item Item { get; }
     public int Quantity { get; set; }
     public int BasePricePerUnit { get; }

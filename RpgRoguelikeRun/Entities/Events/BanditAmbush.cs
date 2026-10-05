@@ -1,5 +1,5 @@
-using RpgRoguelikeRun.Entities;
-using RpgRoguelikeRun.Items;
+using RpgRoguelikeRun.Services.Random;
+
 
 namespace RpgRoguelikeRun.Entities.Events;
 
@@ -11,6 +11,7 @@ public class BanditAmbush : RoadEvent
     public double DamageVariance { get; init; } = 0.3;
     public double StealChance { get; init; } = 0.5;
     public int MaxStolenItems { get; init; } = 2;
+    private static readonly IRandomProvider _random = new SystemRandomAdapter();
 
     public override void Trigger(Trader trader)
     {
@@ -18,19 +19,19 @@ public class BanditAmbush : RoadEvent
 
         double min = Damage * (1 - DamageVariance);
         double max = Damage * (1 + DamageVariance);
-        int actualDamage = (int)Math.Round(min + Random.Shared.NextDouble() * (max - min));
+        int actualDamage = (int)Math.Round(min + _random.NextDouble() * (max - min));
         int stolenGold = trader.LoseGold(actualDamage);
         Console.WriteLine($"   💰 Отняли {stolenGold} золота. Осталось: {trader.Gold}");
 
         if (trader.Inventory.Stacks.Count == 0) return;
 
-        if (Random.Shared.NextDouble() > StealChance)
+        if (_random.NextDouble() > StealChance)
         {
             Console.WriteLine("   🎒 Товар не тронули.");
             return;
         }
 
-        int stolenCount = Random.Shared.Next(1, MaxStolenItems + 1);
+        int stolenCount = _random.Next(1, MaxStolenItems + 1);
         var stolen = new List<string>();
 
         for (int i = 0; i < stolenCount; i++)

@@ -1,3 +1,4 @@
+using RpgRoguelikeRun.Services.Random;
 namespace RpgRoguelikeRun.WorldLayer.Roads.Factory;
 
 public abstract class RoadFactory
@@ -11,12 +12,12 @@ public abstract class RoadFactory
         LengthVariance = lengthVariance;
     }
 
-    protected int RollLength(Random random)
+    protected int RollLength(IRandomProvider random)
     {
         double min = BaseLength * (1 - LengthVariance);
         double max = BaseLength * (1 + LengthVariance);
         return Math.Max(1, (int)Math.Round(min + random.NextDouble() * (max - min)));
     }
 
-    public abstract Road CreateRoad(Random random);
+    public abstract Road CreateRoad(IRandomProvider random);
 }

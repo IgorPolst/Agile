@@ -2,6 +2,8 @@ using RpgRoguelikeRun.Entities;
 using RpgRoguelikeRun.Entities.Events;
 using RpgRoguelikeRun.WorldLayer.Roads;
 using RpgRoguelikeRun.WorldLayer.Roads.Factory;
+using RpgRoguelikeRun.Services.Random;
+
 namespace RpgRoguelikeRun.WorldLayer;
 
 public class World
@@ -14,8 +16,6 @@ public class World
     public List<RoadFactory> RoadFactories { get; } = new();
      public List<Location> Locations { get; } = new();
     public List<Road> Road { get; } = new();
-
-    private readonly Random _random = new();
 
     public World(int width, int height)
     {
@@ -35,7 +35,7 @@ public class World
     {
         if (Locations.Count == 0)
             throw new InvalidOperationException("В мире нет локаций.");
-        return Locations[_random.Next(Locations.Count)];
+        return Locations[GameRandom.Next(0, Locations.Count)];
     }
 
     public void ArriveAt(Trader trader)
@@ -64,8 +64,8 @@ public class World
         if (RoadFactories.Count == 0)
             throw new InvalidOperationException("Нет зарегистрированных фабрик дорог.");
 
-        RoadFactory factory = RoadFactories[_random.Next(RoadFactories.Count)];
-        return factory.CreateRoad(_random);
+        RoadFactory factory = RoadFactories[GameRandom.Next(0, RoadFactories.Count)];
+        return factory.CreateRoad(GameRandom.Provider);
     }
 
     public void GenerateRoads(int count)
@@ -92,7 +92,7 @@ public class World
 
     private RoadEvent? PickEventForRoad(Road road)
     {
-        double roll = _random.NextDouble();
+        double roll = GameRandom.NextDouble();
 
         bool wantHostile = roll < road.BanditChance;
         bool wantFriendly = !wantHostile
@@ -109,7 +109,7 @@ public class World
 
         if (candidates.Count == 0) return null;
 
-        RoadEventFactory factory = candidates[_random.Next(candidates.Count)];
+        RoadEventFactory factory = candidates[GameRandom.Next(0, candidates.Count)];
         return factory.CreateEvent();
     }
 

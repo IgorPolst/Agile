@@ -1,12 +1,11 @@
 using RpgRoguelikeRun.Items;
-using RpgRoguelikeRun.Enums;
+using RpgRoguelikeRun.Services.Random;
 
 namespace RpgRoguelikeRun.Entities;
 
 public static class TraderFactory
 {
     private const int StartingGoodsValue = 50;
-    private static readonly Random _random = new();
     public static Trader CreateStartingTrader(string name = "Ганс", int gold = 100)
     {
         var trader = new Trader(name, gold: 100);
@@ -21,7 +20,7 @@ public static class TraderFactory
 
         while (remaining > 0)
         {
-            string key = allKeys[_random.Next(allKeys.Count)];
+            string key = allKeys[GameRandom.Next(0, allKeys.Count)];
             Item item = ItemCatalog.Create(key);
 
             int price = item.BaseCost;

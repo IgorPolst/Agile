@@ -2,13 +2,6 @@ using RpgRoguelikeRun.Items;
 
 namespace RpgRoguelikeRun.WorldLayer;
 
-/// <summary>
-/// Рынок локации. Хранит лоты и рассчитывает цены с учётом:
-///  - базовой цены лота,
-///  - спреда (покупка дороже продажи),
-///  - объёма сделок (динамика),
-///  - коэффициента выкупа (BuybackRate) для товаров, которых нет в лотах.
-/// </summary>
 public class Market
 {
     public List<MarketLot> Lots { get; } = new();

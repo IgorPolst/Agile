@@ -4,12 +4,12 @@ using RpgRoguelikeRun.WorldLayer;
 using RpgRoguelikeRun.WorldLayer.Locations.Factory;
 using RpgRoguelikeRun.WorldLayer.Roads;
 using RpgRoguelikeRun.WorldLayer.Roads.Factory;
+using RpgRoguelikeRun.Services.Random;
 
 namespace RpgRoguelikeRun.Configuration;
 
 public static class WorldConfigurator
 {
-    private static readonly Random _random = new();
 
     public static void Configure(World world, Difficulty difficulty)
     {
@@ -74,11 +74,11 @@ public static class WorldConfigurator
         foreach (var location in locations)
         {
             int maxRoads = Math.Min(MaxRoadsPerLocation, locations.Length - 1);
-            int roadCount = _random.Next(1, maxRoads + 1);
+            int roadCount = GameRandom.Next(1, maxRoads + 1);
 
             var destinations = locations
                 .Where(l => l != location)
-                .OrderBy(_ => _random.Next())
+                .OrderBy(_ => GameRandom.Next(0, int.MaxValue))
                 .Take(roadCount);
 
             foreach (var dest in destinations)
